@@ -1,0 +1,6 @@
+bin/
+benchmark_jsndb/
+*.db
+*.log
+*.jar
+!dist/jsndb-beta1.jar
