@@ -71,3 +71,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function showTab(tabId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Show the selected tab content
+    document.getElementById(tabId).classList.remove('hidden');
+
+    // Add active class to the clicked button
+    event.currentTarget.classList.add('active');
+}
