@@ -1,7 +1,7 @@
 <div align="center">
   <img src="logo.png" width="150" alt="JSNDB Logo"/>
   <h1>JSNDB</h1>
-  <p><b>JavaScript Object Notation Database</b></p>
+  <p><b>Java JSON Data Base</b></p>
 </div>
 
 ![JSNDB Banner](banner.png)
