@@ -5,12 +5,10 @@ import java.util.Map;
 import org.jsndb.annotations.jsndbObjectId;
 
 public class animal {
-	@org.dizitart.no2.objects.Id
 	@jsndbObjectId
 	private Long animalId;
 	private String nombre;
 	private String raza;
-	@com.fasterxml.jackson.annotation.JsonIgnore
 	private persona owner;
 	private Map<String, persona> dueños = new HashMap<String, persona>();
 
