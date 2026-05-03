@@ -7,7 +7,7 @@
 ![JSNDB Banner](banner.png)
 
 > **⚠️ MIGRATION NOTICE**
-> The official repository for JSNDB has moved from [SourceForge](https://sourceforge.net/projects/jsdbase/) to GitHub! This is now the main repository for future development, issues, and releases.
+> The official repository for JSNDB has moved from [SourceForge](https://sourceforge.net/projects/jsdbase/) to [GitHub](https://github.com/ulifpl/jsndb)! This is now the main repository for future development, issues, and releases.
 
 JSNDB is a **fully embedded, 100% serverless NoSQL Document Database** written purely in Java. It allows you to persist, query, update, and delete Java objects (POJOs) natively to disk using a lightweight JSON structure combined with an extremely optimized binary B-Tree indexing engine.
 
@@ -86,6 +86,59 @@ The test involved inserting, selecting, and modifying **400,000 extreme relation
 - **Obliterates NoSQL Competition:** JSNDB performs inserts **2.2x faster** and selects **3.5x faster** than Nitrite Database. 
 - **Bulk Dominance:** In mass modifications (Updates and Deletes), JSNDB resolves logical operations seamlessly in under 15 milliseconds, beating even the raw C engine of SQLite (which took ~100ms) and destroying Nitrite which took more than 10-12 seconds.
 - **Unhackable Circularity:** Nitrite crashed (`StackOverflowError`) during the test due to cyclic POJO references via Jackson. JSNDB's `lazyload` proxy matrix resolved the references natively without requiring dirty `@JsonIgnore` decorators.
+
+## 💻 Benchmark Comparison Code
+
+### JSNDB (Native Java POJO)
+```java
+// 1. Insert 100k Entities (with relations)
+for (int i = 0; i < COUNT; i++) {
+    persona p = new persona("User " + i, i, new ArrayList<>());
+    for (int k=0; k < 3; k++) {
+        animal a = new animal("Pet " + k, "Breed", p);
+        p.getMascota().add(a);
+        js.persist(a);
+    }
+    js.persist(p);
+}
+js.commit();
+
+// 2. Select by Property (Indexed)
+qwery q = qwery.create(persona.class, "User 500", "name", comparators.equal);
+List<persona> results = js.select(persona.class, q);
+```
+
+### SQLite (JDBC RDBMS)
+```java
+// 1. Relational Table Setup & Inserts
+st.execute("CREATE TABLE persona (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)");
+st.execute("CREATE TABLE animal (id INTEGER PRIMARY KEY, nombre TEXT, owner_id INTEGER)");
+conn.setAutoCommit(false);
+
+for (int i = 0; i < COUNT; i++) {
+    psPersona.setString(2, "User " + i);
+    psPersona.executeUpdate();
+    for (int k=0; k < 3; k++) {
+        psAnimal.setString(1, "Pet " + k);
+        psAnimal.setInt(2, i);
+        psAnimal.executeUpdate();
+    }
+}
+conn.commit();
+```
+
+### Nitrite Database (NoSQL)
+```java
+// 1. Repository Setup & Indexing
+ObjectRepository<persona> repo = db.getRepository(persona.class);
+repo.createIndex("name", IndexOptions.indexOptions(IndexType.NonUnique));
+
+for (int i = 0; i < COUNT; i++) {
+    persona p = new persona("User " + i, i, new ArrayList<>());
+    repo.insert(p); // Nitrite crashes on circular references
+}
+db.commit();
+```
 
 ---
 
