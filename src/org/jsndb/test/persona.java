@@ -4,7 +4,6 @@ import java.util.List;
 import org.jsndb.annotations.jsndbObjectId;
 
 public class persona {
-	@org.dizitart.no2.objects.Id
 	@jsndbObjectId
 	private Long personaId;
 	private String name;
